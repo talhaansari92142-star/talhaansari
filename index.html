@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Battle Game</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:linear-gradient(#061a3a,#0b2a5b);
+color:white;
+text-align:center;
+}
+
+.topbar{
+display:flex;
+justify-content:space-between;
+padding:15px;
+font-size:22px;
+font-weight:bold;
+}
+
+.team1{color:#4da6ff;}
+.team2{color:#ff4d4d;}
+.timer{color:gold;font-size:26px;}
+
+.section{
+margin:15px;
+padding:20px;
+border-radius:15px;
+}
+
+.blue{background:#123c75;}
+.red{background:#5c1b1b;}
+
+.keypad button{
+width:60px;height:60px;
+margin:5px;
+border:none;
+border-radius:10px;
+font-size:20px;
+background:#1f4e9e;
+color:white;
+}
+
+.red .keypad button{background:#a83232;}
+
+.ok{background:green !important;}
+.clear{background:orange !important;}
+
+input{
+font-size:22px;
+padding:10px;
+border-radius:10px;
+border:none;
+margin:10px;
+text-align:center;
+}
+
+.progress{
+height:20px;
+background:#333;
+margin:20px;
+border-radius:10px;
+overflow:hidden;
+}
+
+.bar{
+height:100%;
+width:50%;
+background:linear-gradient(to right,#4da6ff,#ff4d4d);
+transition:0.3s;
+}
+
+.btn{
+padding:12px 25px;
+border:none;
+border-radius:10px;
+font-size:18px;
+margin:10px;
+cursor:pointer;
+}
+
+.start{background:green;color:white;}
+.low{background:#2ecc71;color:white;}
+.medium{background:#f39c12;color:white;}
+.high{background:#e74c3c;color:white;}
+</style>
+</head>
+
+<body>
+
+<h1>⚔ Math Battle ⚔</h1>
+
+<div id="startPage">
+<button class="btn start" onclick="showLevels()">START GAME</button>
+</div>
+
+<div id="levelPage" style="display:none;">
+<h2>Select Level</h2>
+<button class="btn low" onclick="startGame('low')">LOW</button>
+<button class="btn medium" onclick="startGame('medium')">MEDIUM</button>
+<button class="btn high" onclick="startGame('high')">HIGH</button>
+</div>
+
+<div id="game" style="display:none;">
+
+<div class="topbar">
+<div class="team1">TEAM 1: <span id="score1">0</span></div>
+<div class="timer">TIME: <span id="time">30</span></div>
+<div class="team2">TEAM 2: <span id="score2">0</span></div>
+</div>
+
+<div class="progress">
+<div class="bar" id="bar"></div>
+</div>
+
+<div class="section blue">
+<h2 id="q1"></h2>
+<input id="a1" readonly>
+<div class="keypad">
+<button onclick="add(1,1)">1</button>
+<button onclick="add(1,2)">2</button>
+<button onclick="add(1,3)">3</button><br>
+<button onclick="add(1,4)">4</button>
+<button onclick="add(1,5)">5</button>
+<button onclick="add(1,6)">6</button><br>
+<button onclick="add(1,7)">7</button>
+<button onclick="add(1,8)">8</button>
+<button onclick="add(1,9)">9</button><br>
+<button class="clear" onclick="clr(1)">X</button>
+<button onclick="add(1,0)">0</button>
+<button class="ok" onclick="check(1)">OK</button>
+</div>
+</div>
+
+<div class="section red">
+<h2 id="q2"></h2>
+<input id="a2" readonly>
+<div class="keypad">
+<button onclick="add(2,1)">1</button>
+<button onclick="add(2,2)">2</button>
+<button onclick="add(2,3)">3</button><br>
+<button onclick="add(2,4)">4</button>
+<button onclick="add(2,5)">5</button>
+<button onclick="add(2,6)">6</button><br>
+<button onclick="add(2,7)">7</button>
+<button onclick="add(2,8)">8</button>
+<button onclick="add(2,9)">9</button><br>
+<button class="clear" onclick="clr(2)">X</button>
+<button onclick="add(2,0)">0</button>
+<button class="ok" onclick="check(2)">OK</button>
+</div>
+</div>
+
+</div>
+
+<script>
+let score1=0, score2=0;
+let correct1, correct2;
+let level;
+let time=30;
+let timer;
+
+function showLevels(){
+document.getElementById("startPage").style.display="none";
+document.getElementById("levelPage").style.display="block";
+}
+
+function startGame(lv){
+level=lv;
+document.getElementById("levelPage").style.display="none";
+document.getElementById("game").style.display="block";
+newQ(1);
+newQ(2);
+startTimer();
+}
+
+function newQ(team){
+let max = level=="low"?10: level=="medium"?50:100;
+let n1=Math.floor(Math.random()*max);
+let n2=Math.floor(Math.random()*max);
+let correct=n1+n2;
+
+if(team==1){
+correct1=correct;
+document.getElementById("q1").innerHTML=n1+" + "+n2+" = ?";
+document.getElementById("a1").value="";
+}else{
+correct2=correct;
+document.getElementById("q2").innerHTML=n1+" + "+n2+" = ?";
+document.getElementById("a2").value="";
+}
+}
+
+function add(team,num){
+document.getElementById("a"+team).value+=num;
+}
+
+function clr(team){
+document.getElementById("a"+team).value="";
+}
+
+function check(team){
+let ans=document.getElementById("a"+team).value;
+if(team==1 && ans==correct1){
+score1++;
+newQ(1);
+}
+if(team==2 && ans==correct2){
+score2++;
+newQ(2);
+}
+updateScore();
+}
+
+function updateScore(){
+document.getElementById("score1").innerHTML=score1;
+document.getElementById("score2").innerHTML=score2;
+
+let total=score1+score2;
+let percent= total==0?50: (score1/total)*100;
+document.getElementById("bar").style.width=percent+"%";
+}
+
+function startTimer(){
+timer=setInterval(()=>{
+time--;
+document.getElementById("time").innerHTML=time;
+if(time==0){
+clearInterval(timer);
+alert(score1>score2?"TEAM 1 WINS!": score2>score1?"TEAM 2 WINS!":"DRAW!");
+}
+},1000);
+}
+</script>
+
+</body>
+</html>
